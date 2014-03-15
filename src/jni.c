@@ -511,7 +511,7 @@ static mrb_value jmeth__initialize(mrb_state *mrb, mrb_value self) {
     smeth->opt1.obj = mrb_obj_ptr(mclass);
     smeth->caller = jmeth_i__call_constructor;
   } else {
-    struct RClass *rmod = mrb_class_get(mrb, "Jni");
+    struct RClass *rmod = mrb_module_get(mrb, "Jni");
     int depth = 0;
 
     rmod = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(rmod), mrb_intern_cstr(mrb, "Generics")));
