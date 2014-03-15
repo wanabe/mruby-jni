@@ -828,13 +828,20 @@ int mrb_mruby_jni_check_exc(mrb_state *mrb) {
 
   if (mrb->exc) {
     mrb_value mstr;
+    mrb_value mexc;
+    mrb_value mback;
     jclass jclazz;
     if ((*env)->ExceptionCheck(env)) {
       (*env)->ExceptionClear(env);
       //mrb->exc = 0;
       //return 1;
     }
-    mstr = mrb_funcall(mrb, mrb_obj_value(mrb->exc), "inspect", 0);
+    mexc =  mrb_obj_value(mrb->exc);
+    mstr = mrb_funcall(mrb, mexc, "message", 0);
+    mrb_funcall(mrb, mstr, "<<", 1, mrb_str_new(mrb, "\n", 1));
+    mback = mrb_funcall(mrb, mexc, "backtrace", 0);
+    mback = mrb_funcall(mrb, mback, "join", 1, mrb_str_new(mrb, "\n", 1));
+    mrb_funcall(mrb, mstr, "<<", 1, mback);
     mrb->exc = 0;
     jclazz = (*env)->FindClass(env, "java/lang/RuntimeException");
     if (jclazz) {
