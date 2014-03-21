@@ -832,9 +832,9 @@ int mrb_mruby_jni_check_exc(mrb_state *mrb) {
     mrb_value mback;
     jclass jclazz;
     if ((*env)->ExceptionCheck(env)) {
-      (*env)->ExceptionClear(env);
-      //mrb->exc = 0;
-      //return 1;
+      //(*env)->ExceptionClear(env);
+      mrb->exc = 0;
+      return 1;
     }
     mexc =  mrb_obj_value(mrb->exc);
     mstr = mrb_funcall(mrb, mexc, "message", 0);
