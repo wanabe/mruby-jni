@@ -44,6 +44,16 @@ static mrb_value jdefinition__set_class_path(mrb_state *mrb, mrb_value self) {
   return mpath;
 }
 
+int mrb_mruby_jni_check_jexc(mrb_state *mrb) {
+  JNIEnv* env = (JNIEnv*)mrb->ud;
+
+  if ((*env)->ExceptionCheck(env)) {
+    return 1;
+    //mrb_raisef(mrb, E_RUNTIME_ERROR, "Java error TODO: show more detail");
+  }
+  return 0;
+}
+
 mrb_value mrb_mruby_jni_wrap_jobject(mrb_state *mrb, struct RClass *klass, jobject jobj) {
   mrb_value mobj;
   JNIEnv* env = (JNIEnv*)mrb->ud;
@@ -347,7 +357,7 @@ static mrb_value jmeth_i__call_obj(mrb_state *mrb, mrb_value mobj, struct RJMeth
   jobject jobj;
 
   jobj = (*env)->CallObjectMethodA(env, (jobject)DATA_PTR(mobj), rmeth->id, rmeth->argv);
-  if (!jobj) {
+  if (!jobj || mrb_mruby_jni_check_jexc(mrb)) {
     return mrb_nil_value();
   }
   return mrb_mruby_jni_wrap_jobject(mrb, rmeth->opt1.klass, jobj);
